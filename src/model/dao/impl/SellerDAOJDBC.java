@@ -123,7 +123,41 @@ public class SellerDAOJDBC implements SellerDAO {
     @Override
     public List<Seller> findAll() {
 
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+
+            ps = conn.prepareStatement("SELECT seller.*, department.Name as DepName "
+                    + "FROM seller INNER JOIN department "
+                    + "ON seller.DepartmentId = department.Id "
+                    + "ORDER BY Name");
+
+            rs = ps.executeQuery();
+
+            List<Seller> listSeller = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()) {
+
+                Department depTest = map.get(rs.getInt("DepartmentId"));
+
+                if (depTest == null) {
+                    depTest = instatiateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), depTest);
+                }
+
+                Seller seller = intatitateSeller(rs, depTest);
+                listSeller.add(seller);
+            }
+            return listSeller;
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(ps);
+        }
     }
 
     private Seller intatitateSeller(ResultSet rs, Department dep) throws SQLException {
