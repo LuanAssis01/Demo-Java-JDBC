@@ -9,6 +9,7 @@ public class Main {
 
         SellerDAO sellerDao = DaoFactory.createSellerDao();
 
+        System.out.println("                                         === TEST ===");
         Seller seller = sellerDao.findById(3);
 
         System.out.println(seller);
