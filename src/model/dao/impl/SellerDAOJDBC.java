@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -26,19 +29,19 @@ public class SellerDAOJDBC implements SellerDAO {
 
     @Override
     public void insert(Seller obj) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'insert'");
     }
 
     @Override
     public void update(Seller obj) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
     public void deletById(Integer id) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'deletById'");
     }
 
@@ -74,7 +77,56 @@ public class SellerDAOJDBC implements SellerDAO {
 
     }
 
-    private Seller intatitateSeller(ResultSet rs, Department dep) throws SQLException{
+    @Override
+    public List<Seller> findByDepartment(Department dep) {
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+
+            ps = conn.prepareStatement("SELECT seller.*, department.Name as DepName "
+                    + "FROM seller INNER JOIN department "
+                    + "ON seller.DepartmentId = department.Id "
+                    + "WHERE DepartmentId = ? "
+                    + "ORDER BY NAME");
+
+            ps.setInt(1, dep.getId());
+            rs = ps.executeQuery();
+
+            List<Seller> listSeller = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()) {
+
+                Department depTest = map.get(rs.getInt("DepartmentId"));
+
+                if (depTest == null) {
+                    depTest = instatiateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), depTest);
+                }
+
+                Seller seller = intatitateSeller(rs, depTest);
+                listSeller.add(seller);
+            }
+            return listSeller;
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(ps);
+        }
+
+    }
+
+    @Override
+    public List<Seller> findAll() {
+
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+    private Seller intatitateSeller(ResultSet rs, Department dep) throws SQLException {
         Seller seller = new Seller();
         seller.setId(rs.getInt("Id"));
         seller.setName(rs.getString("Name"));
@@ -90,12 +142,6 @@ public class SellerDAOJDBC implements SellerDAO {
         dep.setId(rs.getInt("DepartmentId"));
         dep.setName(rs.getString("DepName"));
         return dep;
-    }
-
-    @Override
-    public List<Seller> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
 }
