@@ -95,7 +95,20 @@ public class SellerDAOJDBC implements SellerDAO {
     @Override
     public void deletById(Integer id) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'deletById'");
+        PreparedStatement ps = null;
+
+        try {
+
+            ps = conn.prepareStatement("DELETE FROM seller WHERE Id = ?");
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(ps);
+        }
     }
 
     @Override
