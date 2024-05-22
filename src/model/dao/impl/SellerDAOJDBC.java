@@ -93,7 +93,7 @@ public class SellerDAOJDBC implements SellerDAO {
     }
 
     @Override
-    public void deletById(Integer id) {
+    public void deleteById(Integer id) {
 
         PreparedStatement ps = null;
 

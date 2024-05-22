@@ -9,7 +9,7 @@ import model.dao.SellerDAO;
 import model.entities.Department;
 import model.entities.Seller;
 
-public class Main {
+public class MainSeller {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
@@ -52,7 +52,7 @@ public class Main {
         System.out.println("Teste 7");
         System.out.print("Enter a id for delete seller in data base: ");
         Integer id = scanner.nextInt();
-        sellerDao.deletById(id);
+        sellerDao.deleteById(id);
         System.out.println("Delete completed!");
 
         scanner.close();
